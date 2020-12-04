@@ -18,19 +18,25 @@ time_table_drop = ""
 # CREATE TABLES
 
 staging_events_table_create= ("""
-CREATE staging_events_table(
-    artist VARCHAR(100),
-    auth VARCHAR(15)
-    firstName VARCHAR(20),
-    gender VARCHAR(1),
+CREATE TABLE staging_events_table (
+    artist     VARCHAR(200),
+    auth       VARCHAR(15),
+    firstName  VARCHAR(20),
+    gender     VARCHAR(1),
     itemInSession INTEGER,
-    lastName VARCHAR(20),
-    length FLOAT,
-    level VARCHAR(10),
-    location VARCHAR(30),
-    method VARCHAR(10),
-    page VARCHAR(10),
-    
+    lastName      VARCHAR(20),
+    length        FLOAT,
+    level         VARCHAR(10),
+    location      VARCHAR(50),
+    method        VARCHAR(10),
+    page          VARCHAR(20),
+    registration  VARCHAR(50),
+    sessionId     INTEGER,
+    song          TEXT,
+    status        SMALLINT,
+    ts            BIGINT,
+    userAgent     VARCHAR(200),
+    userId        INTEGER
 );
 """)
 
@@ -55,9 +61,19 @@ time_table_create = ("""
 # STAGING TABLES
 
 staging_events_copy = ("""
-""").format()
+    COPY staging_events_table
+    FROM 's3://udacity-dend/log_data/2018/11/2018-11'
+    credentials 'aws_iam_role=arn:aws:iam::349696042462:role/myRedshiftRole'
+    json 'auto'
+    ;
+    """).format()
 
 staging_songs_copy = ("""
+    COPY staging_songs_table
+    FROM 's3://udacity-dend/song_data'
+    credentials 'aws_iam_role=arn:aws:iam::349696042462:role/myRedshiftRole'
+    json 'auto'
+    ;
 """).format()
 
 # FINAL TABLES
