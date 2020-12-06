@@ -1,7 +1,9 @@
 import configparser
 import psycopg2
+import sql_queries
+import importlib
+importlib.reload(sql_queries)
 from sql_queries import create_table_queries, drop_table_queries
-
 
 def drop_tables(cur, conn):
     for query in drop_table_queries:
@@ -11,6 +13,7 @@ def drop_tables(cur, conn):
 
 def create_tables(cur, conn):
     for query in create_table_queries:
+        print("QUERY", query)
         cur.execute(query)
         conn.commit()
 
