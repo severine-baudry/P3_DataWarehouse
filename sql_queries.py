@@ -41,12 +41,24 @@ CREATE TABLE staging_events_table (
 """)
 
 staging_songs_table_create = ("""
+CREATE TABLE staging_songs_table (
+  num_songs INTEGER, 
+  artist_id VARCHAR(30),
+  artist_latitude FLOAT, 
+  artist_longitude FLOAT, 
+  artist_location TEXT, 
+  artist_name TEXT, 
+  song_id VARCHAR(30), 
+  title TEXT, 
+  duration FLOAT, 
+  year  SMALLINT
+);
 """)
 
 #songplay_id, start_time, user_id, level, song_id, artist_id, session_id, location, user_agent
 songplay_table_create = ("""
     CREATE TABLE IF NOT EXISTS songplays
-    (songplay_id SERIAL,
+    (songplay_id BIGINT IDENTITY(0,1),
     start_time bigint references time(timestamp),
     user_id int references users(user_id),
     level varchar,
@@ -132,6 +144,7 @@ songplay_table_insert = ("""
 """)
 
 user_table_insert = ("""
+
 """)
 
 song_table_insert = ("""
