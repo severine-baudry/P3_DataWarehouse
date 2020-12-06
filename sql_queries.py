@@ -63,18 +63,18 @@ time_table_create = ("""
 staging_events_copy = ("""
     COPY staging_events_table
     FROM 's3://udacity-dend/log_data/2018/11/2018-11'
-    credentials 'aws_iam_role=arn:aws:iam::349696042462:role/myRedshiftRole'
+    credentials '{}'
     json 'auto'
     ;
-    """).format()
+    """).format( config.get("IAM_ROLE", "ARN") )
 
 staging_songs_copy = ("""
     COPY staging_songs_table
     FROM 's3://udacity-dend/song_data'
-    credentials 'aws_iam_role=arn:aws:iam::349696042462:role/myRedshiftRole'
+    credentials 'ARN'
     json 'auto'
     ;
-""").format()
+""").format( config.get("IAM_ROLE", "ARN") )
 
 # FINAL TABLES
 
