@@ -110,7 +110,7 @@ artist_table_create = ("""
 time_table_create = ("""
     CREATE TABLE IF NOT EXISTS timestamps
     (
-    start_time bigint PRIMARY KEY,
+    start_time timestamp PRIMARY KEY,
     hour int,
     day int,
     weekofyear int,
@@ -156,7 +156,15 @@ WHERE userId IS NOT NULL;
 """)
 
 song_table_insert = ("""
-INSERT INTO songs()
+INSERT INTO songs(song_id, title, artist_id, year, duration)
+SELECT
+    DISTINCT song_id,
+    title,
+    artist_id,
+    year,
+    duration
+FROM staging_songs_table
+;
 """)
 
 artist_table_insert = ("""
@@ -171,6 +179,17 @@ FROM staging_songs_table;
 """)
 
 time_table_insert = ("""
+INSERT INTO timestamps(start_time, hour, day, weekofyear, month, year, dayofweek)
+SELECT
+    DISTINCT TIMESTAMP 'epoch' + (ts/1000)::int * INTERVAL '1 second'  AS start_time,
+    EXTRACT( hour FROM start_time ) AS hour,
+    EXTRACT( day FROM start_time ) AS day,
+    EXTRACT( week FROM start_time ) AS weekofyear,
+    EXTRACT( month FROM start_time ) AS month,
+    EXTRACT( year FROM start_time ) AS year,
+    EXTRACT( dow FROM start_time ) AS dayofweek
+
+FROM staging_events_table;
 """)
 
 # QUERY LISTS
@@ -178,13 +197,14 @@ time_table_insert = ("""
 create_table_queries = [staging_events_table_create, staging_songs_table_create, user_table_create, artist_table_create, song_table_create, time_table_create, songplay_table_create]
 
 # create only final star-schema tables
-#create_table_queries = [user_table_create, artist_table_create, song_table_create, time_table_create, songplay_table_create ]
-
+create_table_queries = [user_table_create, artist_table_create, song_table_create, time_table_create, songplay_table_create ]
+#create_table_queries = [time_table_create]
 
 drop_table_queries = [staging_events_table_drop, staging_songs_table_drop, songplay_table_drop, user_table_drop, song_table_drop, artist_table_drop, time_table_drop]
 
 # drop only star-schema tables
-#drop_table_queries = [ songplay_table_drop, user_table_drop, song_table_drop, artist_table_drop, time_table_drop]
+drop_table_queries = [ songplay_table_drop, user_table_drop, song_table_drop, artist_table_drop, time_table_drop]
+#drop_table_queries = [time_table_drop]
 
 copy_table_queries = [staging_events_copy, staging_songs_copy]
 
@@ -192,4 +212,5 @@ insert_table_queries = [songplay_table_insert, user_table_insert, artist_table_i
 # test insert table
 #insert_table_queries = [user_table_insert]
 #insert_table_queries = [artist_table_insert]
-insert_table_queries = [song_table_insert]
+#insert_table_queries = [song_table_insert]
+insert_table_queries = [time_table_insert]
