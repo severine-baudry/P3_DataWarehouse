@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS staging_songs_table (
 songplay_table_create = ("""
     CREATE TABLE IF NOT EXISTS songplays
     (songplay_id BIGINT IDENTITY(0,1),
-    start_time bigint references timestamps(start_time),
+    start_time TIMESTAMP references timestamps(start_time),
     user_id int references users(user_id),
     level varchar,
     song_id varchar references songs(song_id),
@@ -110,7 +110,7 @@ artist_table_create = ("""
 time_table_create = ("""
     CREATE TABLE IF NOT EXISTS timestamps
     (
-    start_time timestamp PRIMARY KEY,
+    start_time TIMESTAMP PRIMARY KEY,
     hour int,
     day int,
     weekofyear int,
@@ -139,8 +139,33 @@ staging_songs_copy = ("""
 """).format( config.get("IAM_ROLE", "ARN") )
 
 # FINAL TABLES
+"""
+songplay_id BIGINT IDENTITY(0,1),
+    start_time TIMESTAMP references timestamps(start_time),
+    user_id int references users(user_id),
+    level varchar,
+    song_id varchar references songs(song_id),
+    artist_id varchar references artists(artist_id),
+    session_id int,
+    location varchar(200),
+    useragent varchar(200),
+    PRIMARY KEY(user_id, song_id, start_time)
+    );""" 
 
 songplay_table_insert = ("""
+INSERT INTO songplays(start_time, user_id,level, song_id, artist_id, session_id, location, useragent)
+SELECT
+ TIMESTAMP 'epoch' + (ts/1000)::int * INTERVAL '1 second'  AS start_time,
+ userId AS user_id,
+ level,
+ songs.song_id AS song_id,
+ songs.artist_id AS artist_id,
+ sessionId AS session_id,
+ location, 
+ userAgent AS useragent
+ 
+FROM staging_events_table
+JOIN songs ON songs.title = staging_events_table.song
 """)
 
 user_table_insert = ("""
@@ -197,20 +222,21 @@ FROM staging_events_table;
 create_table_queries = [staging_events_table_create, staging_songs_table_create, user_table_create, artist_table_create, song_table_create, time_table_create, songplay_table_create]
 
 # create only final star-schema tables
-create_table_queries = [user_table_create, artist_table_create, song_table_create, time_table_create, songplay_table_create ]
-#create_table_queries = [time_table_create]
+#create_table_queries = [user_table_create, artist_table_create, song_table_create, time_table_create, songplay_table_create ]
+create_table_queries = [time_table_create, songplay_table_create]
 
 drop_table_queries = [staging_events_table_drop, staging_songs_table_drop, songplay_table_drop, user_table_drop, song_table_drop, artist_table_drop, time_table_drop]
 
 # drop only star-schema tables
-drop_table_queries = [ songplay_table_drop, user_table_drop, song_table_drop, artist_table_drop, time_table_drop]
+#drop_table_queries = [ songplay_table_drop, user_table_drop, song_table_drop, artist_table_drop, time_table_drop]
 #drop_table_queries = [time_table_drop]
 
 copy_table_queries = [staging_events_copy, staging_songs_copy]
 
-insert_table_queries = [songplay_table_insert, user_table_insert, artist_table_insert, song_table_insert, time_table_insert]
+#insert_table_queries = [ user_table_insert, artist_table_insert, song_table_insert, time_table_insert, songplay_table_insert]
 # test insert table
 #insert_table_queries = [user_table_insert]
 #insert_table_queries = [artist_table_insert]
 #insert_table_queries = [song_table_insert]
-insert_table_queries = [time_table_insert]
+#
+insert_table_queries = [time_table_insert, song_table_insert]
