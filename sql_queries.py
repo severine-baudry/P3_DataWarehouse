@@ -62,7 +62,7 @@ songplay_table_create = ("""
     start_time TIMESTAMP references timestamps(start_time),
     user_id int references users(user_id),
     level varchar,
-    song_id varchar references songs(song_id),
+    song_id varchar references songs(song_id) sortkey distkey,
     artist_id varchar references artists(artist_id),
     session_id int,
     location varchar(200),
@@ -86,7 +86,7 @@ user_table_create = ("""
 song_table_create = ("""
     CREATE TABLE IF NOT EXISTS songs
     (
-    song_id varchar PRIMARY KEY,
+    song_id varchar PRIMARY KEY sortkey distkey,
     title varchar(200),
     artist_id varchar references artists(artist_id),
     year int,
@@ -98,7 +98,7 @@ song_table_create = ("""
 artist_table_create = ("""
     CREATE TABLE IF NOT EXISTS artists
     (
-    artist_id varchar PRIMARY KEY,
+    artist_id varchar PRIMARY KEY sortkey distkey,
     name varchar,
     location varchar,
     latitude real,
@@ -110,7 +110,7 @@ artist_table_create = ("""
 time_table_create = ("""
     CREATE TABLE IF NOT EXISTS timestamps
     (
-    start_time TIMESTAMP PRIMARY KEY,
+    start_time TIMESTAMP PRIMARY KEY sortkey distkey,
     hour int,
     day int,
     weekofyear int,
