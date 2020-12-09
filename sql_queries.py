@@ -74,12 +74,12 @@ songplay_table_create = ("""
 #user_id, first_name, last_name, gender, level
 user_table_create = ("""
     CREATE TABLE IF NOT EXISTS users
-    ( user_id int PRIMARY KEY,
+    ( user_id int PRIMARY KEY sortkey,
     first_name varchar,
     last_name varchar,
     gender char,
     level varchar
-    );
+    ) diststyle all;
 """)
 
 #song_id, title, artist_id, year, duration
@@ -222,13 +222,14 @@ FROM staging_events_table;
 create_table_queries = [staging_events_table_create, staging_songs_table_create, user_table_create, artist_table_create, song_table_create, time_table_create, songplay_table_create]
 
 # create only final star-schema tables
-#create_table_queries = [user_table_create, artist_table_create, song_table_create, time_table_create, songplay_table_create ]
+l_create_star_tables = [ user_table_create, artist_table_create, song_table_create, time_table_create, songplay_table_create]
+
 #create_table_queries = [time_table_create, songplay_table_create]
 
 drop_table_queries = [staging_events_table_drop, staging_songs_table_drop, songplay_table_drop, user_table_drop, song_table_drop, artist_table_drop, time_table_drop]
 
 # drop only star-schema tables
-#drop_table_queries = [ songplay_table_drop, user_table_drop, song_table_drop, artist_table_drop, time_table_drop]
+l_drop_star_tables = [songplay_table_drop, user_table_drop, song_table_drop, artist_table_drop, time_table_drop]
 #drop_table_queries = [time_table_drop]
 
 copy_table_queries = [staging_events_copy, staging_songs_copy]
