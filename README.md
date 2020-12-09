@@ -15,6 +15,8 @@ Sparkify analytics team is particularly interested in knowing what songs users a
 
 ![alt text](songplay_DB.png "Sparkify song play schema")
 
+Since there are very few users (102) compared to the total number of songs and songplays (around 10000 each), we use a DIST ALL strategy for the user table. For the other tables, we use `song_id` as a sortkey and distkey for tables `songs` and `songplays`. For `timestamps` and `artists` we use the primary keys to sort and distribute the tables. 
+
 # Installation
 
 ## Prerequisites
@@ -33,8 +35,9 @@ Once the cluster created, enter your cluster parameters into a configuration fil
 **__BE CAREFUL TO KEEP dwh.cfg SECRET !!! IN PARTICULAR, DON'T PUT IT IN A PUBLIC REPOSITORY.__**
 
 ## Data
-The data used to populate the database is stores in an S3 bucket :
+The data used to populate the database is stored in S3 buckets :
 `s3://udacity-dend/song_data`
+
 `s3://udacity-dend/log_data`
 
 ## How to run the code
@@ -51,63 +54,8 @@ To populate the database with data, run in the terminal :
 The `etl` phase will first copy raw data from S3 bucket into staging databases. Then, the staging 
 
 ### Example queries
-The star database design makes the database queries easy. For instance, if the analytics teams want to know what songs in the database have been played through the app, they can issue a simple sql query :
-
-    SELECT sp.song_id, songs.title FROM songplays sp JOIN songs ON sp.song_id = songs.song_id; 
-
-Output :
-
-    song_id            |     title      
-    --------------------+----------------
-    SOZCTXZ12AB0182364 | Setanta matins
-    (1 row)
-
-To retrieve more detailed information, i.e. the song's artist and the playtime, use a `JOIN`query :
-
-    SELECT s.title AS song, a.name AS artist, t.hour,t.minute, t.second,
-    u.first_name AS "user first name", u.last_name AS "user last name"
-    FROM songplays sp JOIN songs s ON sp.song_id = s.song_id  
-    JOIN artists a on s.artist_id = a.artist_id
-    JOIN time t ON t.timestamp = sp.start_time 
-    JOIN users u on u.user_id = sp.user_id;
-
-Output :
-
-          song      | artist | hour | minute | second | user first name | user last name 
-    ----------------+--------+------+--------+--------+-----------------+------------
-    Setanta matins | Elena  |   21 |     56 |     47 | Lily            | Koch
-    (1 row)    
-
-To retrieve all the paying users in the database :
-
-    SELECT * from users WHERE users.level = 'paid';
-    
-Output :
-
-     user_id | first_name | last_name | gender | level 
-    ---------+------------+-----------+--------+-------
-        29 | Jacqueline | Lynch     | F      | paid
-        58 | Emily      | Benson    | F      | paid
-        97 | Kate       | Harrell   | F      | paid
-        73 | Jacob      | Klein     | M      | paid
-      ...
-
-To list all songs in the database :
-
-    SELECT s.title, a.name, s.year, s.duration
-    FROM songs s JOIN artists a
-    ON s.artist_id = a.artist_id;
-    
-Output :
-
-                  title               |      name      | year | duration 
-    ----------------------------------+----------------+------+----------
-    Ten Tonne                        | Chase & Status | 2005 |  337.684
-    Get Your Head Stuck On Your Neck | Soul Mekanik   |    0 |  45.6616
-    Sonnerie lalaleulé hi houuu      | Blingtones     |    0 |   29.544
-    ...
-
-
+The star database design makes the database queries easy. For instance, if the analytics teams want to know what songs in the database have been played through the app, they can issue a simple sql query. 
+Exemples of queries on the database are given in `songplayDB_example.ipynb`
 
 # Changelog
 
