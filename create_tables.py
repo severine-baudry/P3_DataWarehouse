@@ -6,9 +6,15 @@ importlib.reload(sql_queries)
 from sql_queries import create_table_queries, drop_table_queries
 
 def split_line(line):
+    '''
+    split multiline string along lines; remove empty lines
+    '''
     return [ a for a in line.split("\n") if len(a.strip()) != 0]
 
 def drop_tables(cur, conn):
+    '''
+    drop all tables
+    '''
     for query in drop_table_queries:
         print("DROP QUERY : ", query)
         cur.execute(query)
@@ -16,6 +22,9 @@ def drop_tables(cur, conn):
 
 
 def create_tables(cur, conn):
+    '''
+    create staging and star-schema tables
+    '''
     for query in create_table_queries:
         print("QUERY", split_line(query)[0] )
         cur.execute(query)
