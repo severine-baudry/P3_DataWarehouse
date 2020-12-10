@@ -32,6 +32,10 @@ def create_tables(cur, conn):
 
 
 def main():
+    '''
+    connect to Redshift cluster, then drop tables if they exist 
+    and create staging and start schema tables
+    '''
     config = configparser.ConfigParser()
     config.read('dwh.cfg')
 

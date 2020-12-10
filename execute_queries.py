@@ -21,6 +21,9 @@ def execute_queries(cur, conn, l_queries):
         conn.commit()
 
 def main():
+    '''
+    drop, create and fill only star-schema tables (to avoid time-consumming copies from S3)
+    '''
     config = configparser.ConfigParser()
     config.read('dwh.cfg')
 

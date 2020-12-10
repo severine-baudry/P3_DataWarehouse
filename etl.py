@@ -29,6 +29,9 @@ def insert_tables(cur, conn):
 
 
 def main():
+    '''
+    connect to redshift cluster; copy S3 data into staging tables, then on star-schema tables
+    '''
     config = configparser.ConfigParser()
     config.read('dwh.cfg')
 
